@@ -3,9 +3,11 @@ package main
 import (
 	//    fzf "github.com/ktr0731/go-fuzzyfinder"
 	"fmt"
-	"github.com/joho/godotenv"
 	"go-theatron/req"
+	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type Stream struct {
@@ -35,6 +37,9 @@ func main() {
 	}
 
 	oauth := os.Getenv("THEATRON_OAUTH_KEY")
+	if len(oauth) < 1 {
+	    log.Fatalln("Couldn't find oauth key environment variable THEATRON_OAUTH_KEY")
+	}
 	stream := req.Following(client_id, oauth)
 	fmt.Println(stream)
 
