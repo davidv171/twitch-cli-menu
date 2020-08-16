@@ -5,16 +5,25 @@ A simple CLI Twitch tool, to use as an interactive middleware with streamlink, o
 
 ## TODO
 
-[x] List information and pick following live streams
-[] Format output to make important information stick out a bit more
-[] Support resetting of oauth key
-[] Support picking of quality
-[] Support VODs
-[] Full CLI support with flags
-[] Other Theatron in bash features
-[] Optional: support images using SIXEL?
-[] Don't rely on ktr0731's go fuzzy finder completely
-[] Refractor
+* [x] List information and pick following live streams
+
+* [] Format output to make important information stick out a bit more
+
+* [] Support resetting of oauth key
+
+* [] Support picking of quality
+
+* [] Support VODs
+
+* [] Full CLI support with flags
+
+* [] Other Theatron in bash features
+
+* [] Optional: support images using SIXEL?
+
+* [] Don't rely on ktr0731's go fuzzy finder completely
+
+* [] Refractor
 
 ## Status
 
