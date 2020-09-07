@@ -2,13 +2,10 @@ package req
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httputil"
-
-	"github.com/ktr0731/go-fuzzyfinder"
 )
 
 type Streams struct {
@@ -34,14 +31,14 @@ type Channel struct {
 
 var follow_url string = "https://api.twitch.tv/kraken/streams/followed"
 
-func Following(clientId, oauth string) string {
+// Return list of LIVE streamers on follower list
+func Live(clientId, oauth string) Streams {
 
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", follow_url, nil)
 	if err != nil {
 		log.Fatal("Couldn't request following...", err)
 	}
-
 	req.Header.Add("Accept", "application/vnd.twitchtv.v5+json")
 	// Twitch api doesn't accept canonicalized form...
 	req.Header["Client-ID"] = []string{clientId}
@@ -63,35 +60,13 @@ func Following(clientId, oauth string) string {
 	if err != nil {
 		log.Fatal("Couldn't unmarshal json...", err)
 	}
-	return live.Streams[pick(live)].Chan.Url
+	return live
 }
 
-func pick(live Streams) int {
+// Return list of all streamers user follows
+func All() {
+	//TODO
 
-	picked, err := fuzzyfinder.Find(
-		live.Streams,
-		func(i int) string {
-			return live.Streams[i].Chan.DisplayName
-		},
-		fuzzyfinder.WithPreviewWindow(func(i, w, h int) string {
-			if i == -1 {
-				return "Could not find any streams"
-			}
-			return fmt.Sprintf("%s\nGame %s \nViewers:%v \nMax video quality: %vp, \nIs mature: %v \nTitle: %s, \nLanguage: %s, \nDescription: %s",
-				live.Streams[i].Chan.DisplayName,
-				live.Streams[i].Chan.Game,
-				live.Streams[i].Viewers,
-				live.Streams[i].VideoHeight,
-				live.Streams[i].Chan.Mature,
-				live.Streams[i].Chan.Title,
-				live.Streams[i].Chan.Language,
-				live.Streams[i].Chan.Description)
-		}))
-
-	if err != nil {
-		log.Fatalln("Couldn't initialize picker", err)
-	}
-
-	return picked
-
+	client := &http.Client{}
+	client.
 }
