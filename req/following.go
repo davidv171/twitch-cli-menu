@@ -2,10 +2,9 @@ package req
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
-	"net/http"
-	"net/http/httputil"
 )
 
 type Streams struct {
@@ -29,24 +28,15 @@ type Channel struct {
 	Description     string `json:"description"`          // Channel description
 }
 
-var follow_url string = "https://api.twitch.tv/kraken/streams/followed"
+const follow_url = "https://api.twitch.tv/kraken/streams/followed"
+const get_user_url = "https://api.twitch.tv/kraken/user"
+const get = "GET"
 
 // Return list of LIVE streamers on follower list
-func Live(clientId, oauth string) Streams {
-
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", follow_url, nil)
-	if err != nil {
-		log.Fatal("Couldn't request following...", err)
-	}
-	req.Header.Add("Accept", "application/vnd.twitchtv.v5+json")
-	// Twitch api doesn't accept canonicalized form...
-	req.Header["Client-ID"] = []string{clientId}
-	req.Header.Add("Authorization", "OAuth "+oauth)
-
-	_, err = httputil.DumpRequest(req, false)
-
-	resp, err := client.Do(req)
+func Live() Streams {
+	url := follow_url
+	reqT := get
+	resp, err := Send(GenReq(&reqT, &url, nil))
 	if err != nil {
 		log.Fatal("Couldn't get followed list, quitting", err)
 	}
@@ -63,10 +53,43 @@ func Live(clientId, oauth string) Streams {
 	return live
 }
 
+
+type User struct {
+	Id     string `json:"_id"`         // Stream name
+}
 // Return list of all streamers user follows
 func All() {
 	//TODO
+	//First we get the user id, then we get the follows for that channel
+	//GET https://api.twitch.tv/kraken/users/<user ID>/follows/channels
+	url := get_user_url
+	reqT := get
+	resp, err := Send(GenReq(&reqT, &url, nil))
+	resp_data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal("Could not parse all response")
+	}
+	user := User{}
+	err = json.Unmarshal([]byte(resp_data), &user)
 
-	client := &http.Client{}
-	client.
+	url = "https://api.twitch.tv/kraken/users/" + user.Id + "/follows/channels"
+	fmt.Println(url)
+	resp, err = Send(GenReq(&reqT, &url, nil))
+	if err != nil {
+	    log.Fatal("Could not send request")
+	}
+	if resp.StatusCode > 299{
+	    log.Fatal("Could not get channels", resp.Status)
+	}
+	resp_data, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal("Could not parse all response")
+	}
+	//TODO: Change into separate Struct
+	all := Streams{}
+	err = json.Unmarshal([]byte(resp_data), &all)
+	if err != nil {
+	    log.Fatalln("Couldn't unmarshal response", string(resp_data))
+	}
+
 }

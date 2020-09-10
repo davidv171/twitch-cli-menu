@@ -9,6 +9,7 @@ import (
 )
 
 func Picks(live req.Streams) req.Stream {
+
 	picked, err := fuzzyfinder.Find(
 		live.Streams,
 		func(i int) string {
@@ -32,6 +33,7 @@ func Picks(live req.Streams) req.Stream {
 	if err != nil {
 		log.Fatalln("Couldn't initialize picker", err)
 	}
+
 	return live.Streams[picked]
 
 }
