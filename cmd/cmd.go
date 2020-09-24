@@ -3,12 +3,11 @@ package cmd
 import "flag"
 
 type Cmd struct {
-	Vod     bool // Check for vods after picking streamer
+	Vod     bool // Check for vods after picking streamer, lists all streamers instead of only live ones
 	Quality bool // Ask for picking quality after choosing stream
 }
 
 func Parse() Cmd {
-
 	var vods bool
 	var quality bool
 	flag.BoolVar(&vods, "v", false, "Browse vods after picking a streamer")

@@ -5,10 +5,12 @@ import (
 	"go-theatron/req"
 	"go-theatron/utils"
 )
+
 type Output struct {
-    Url string
-    Quality string
+	Url     string
+	Quality string
 }
+
 //Run through the protocol of functions to run in a sequence based on flags picked
 func Protocol(command Cmd) {
 
@@ -20,13 +22,13 @@ func Protocol(command Cmd) {
 		//TODO
 		req.All()
 	} else {
-	    following = req.Live()
+		following = req.Live()
 	}
 
 	pstream := Picks(following)
 
-	output := Output {
-	    Url : pstream.Chan.Url,
+	output := Output{
+		Url: pstream.Chan.Url,
 	}
 
 	if command.Quality {

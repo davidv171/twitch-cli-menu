@@ -37,4 +37,3 @@ func Picks(live req.Streams) req.Stream {
 	return live.Streams[picked]
 
 }
-

@@ -1,9 +1,7 @@
 package main
 
 import (
-	//    fzf "github.com/ktr0731/go-fuzzyfinder"
-
-	"go-theatron/cmd"
+	"twitch-cli-menu/cmd"
 )
 
 func main() {

@@ -1,4 +1,4 @@
-module go-theatron
+module twitch-cli-menu
 
 go 1.14
 

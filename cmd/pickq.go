@@ -6,6 +6,7 @@ import (
 
 	"github.com/ktr0731/go-fuzzyfinder"
 )
+
 func Pickq(qualities []int) string {
 
 	picked, err := fuzzyfinder.Find(

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"time"
 )
 
 type Streams struct {
@@ -53,9 +54,40 @@ func Live() Streams {
 	return live
 }
 
-
 type User struct {
-	Id     string `json:"_id"`         // Stream name
+	Id string `json:"_id"` // Stream name
+}
+
+// All Channels that a user follows, differs from a Stream
+// Currently using many for now
+type Followed struct {
+	Total   int `json:"_total"`
+	Follows []struct {
+		CreatedAt time.Time `json:"created_at"`
+		Channel   struct {
+			Mature                       bool        `json:"mature"`
+			Status                       string      `json:"status"`
+			BroadcasterLanguage          string      `json:"broadcaster_language"`
+			DisplayName                  string      `json:"display_name"`
+			Game                         string      `json:"game"`
+			Language                     string      `json:"language"`
+			Name                         string      `json:"name"`
+			CreatedAt                    time.Time   `json:"created_at"`
+			UpdatedAt                    time.Time   `json:"updated_at"`
+			Partner                      bool        `json:"partner"`
+			Logo                         string      `json:"logo"`
+			VideoBanner                  string      `json:"video_banner"`
+			URL                          string      `json:"url"`
+			Views                        int         `json:"views"`
+			Followers                    int         `json:"followers"`
+			BroadcasterType              string      `json:"broadcaster_type"`
+			Description                  string      `json:"description"`
+			PrivateVideo                 bool        `json:"private_video"`
+			//TODO: Decide what to do with channels with private videos
+			PrivacyOptionsEnabled        bool        `json:"privacy_options_enabled"`
+		} `json:"channel"`
+		Notifications bool `json:"notifications"`
+	} `json:"follows"`
 }
 // Return list of all streamers user follows
 func All() {
@@ -65,31 +97,35 @@ func All() {
 	url := get_user_url
 	reqT := get
 	resp, err := Send(GenReq(&reqT, &url, nil))
-	resp_data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln("Couldn't send request")
+	}
+	respData, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal("Could not parse all response")
 	}
 	user := User{}
-	err = json.Unmarshal([]byte(resp_data), &user)
+	err = json.Unmarshal([]byte(respData), &user)
 
 	url = "https://api.twitch.tv/kraken/users/" + user.Id + "/follows/channels"
 	fmt.Println(url)
 	resp, err = Send(GenReq(&reqT, &url, nil))
 	if err != nil {
-	    log.Fatal("Could not send request")
+		log.Fatal("Could not send request")
 	}
-	if resp.StatusCode > 299{
-	    log.Fatal("Could not get channels", resp.Status)
+	if resp.StatusCode > 299 {
+		log.Fatal("Could not get channels", resp.Status)
 	}
-	resp_data, err = ioutil.ReadAll(resp.Body)
+	respData, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal("Could not parse all response")
 	}
+	log.Println(string(respData))
 	//TODO: Change into separate Struct
 	all := Streams{}
-	err = json.Unmarshal([]byte(resp_data), &all)
+	err = json.Unmarshal([]byte(respData), &all)
 	if err != nil {
-	    log.Fatalln("Couldn't unmarshal response", string(resp_data))
+		log.Fatalln("Couldn't unmarshal response", string(respData))
 	}
 
 }
