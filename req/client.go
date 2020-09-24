@@ -1,7 +1,7 @@
 package req
 
 import (
-	"go-theatron/utils"
+	"twitch-cli-menu/utils"
 	"io"
 	"log"
 	"net/http"
@@ -49,7 +49,6 @@ func Send(req *http.Request) (*http.Response, error) {
 	if C == nil {
 		GenClient()
 	}
-
 	resp, err := C.Do(req)
 	return resp, err
 }

@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"go-theatron/req"
-	"go-theatron/utils"
+	"twitch-cli-menu/req"
+	"twitch-cli-menu/utils"
 )
 
 type Output struct {
@@ -17,24 +17,31 @@ func Protocol(command Cmd) {
 	utils.EnvLoad()
 	//Always pick stream for now
 	// If vodmode list all following streamers
-	var following req.Streams
+	var following req.LiveStreams
+	var output Output
+	var videoHeight int
+
 	if command.Vod {
-		//TODO
-		req.All()
+		// Pick streamers
+		all := req.All()
+		picked := PickAll(all)
+		// Pick available VODS for streamers
+		fmt.Println(picked)
 	} else {
 		following = req.Live()
-	}
 
-	pstream := Picks(following)
+		pstream := PickLive(following)
 
-	output := Output{
-		Url: pstream.Chan.Url,
-	}
+		output = Output{
+			Url: pstream.Chan.Url,
+		}
 
-	if command.Quality {
-		// get string of max video quality, build on that
-		avq := utils.Qualities(pstream.VideoHeight)
-		output.Quality = Pickq(avq)
+		if command.Quality {
+			// get string of max video quality, build on that
+			avq := utils.Qualities(videoHeight)
+			output.Quality = Pickq(avq)
+		}
+
 	}
 
 	fmt.Print(output.Url + " " + output.Quality)

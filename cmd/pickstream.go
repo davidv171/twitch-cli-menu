@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"go-theatron/req"
 	"log"
+	"twitch-cli-menu/req"
 
 	"github.com/ktr0731/go-fuzzyfinder"
 )
 
-func Picks(live req.Streams) req.Stream {
+func PickLive(live req.LiveStreams) req.LiveStream {
 
 	picked, err := fuzzyfinder.Find(
 		live.Streams,
@@ -35,5 +35,34 @@ func Picks(live req.Streams) req.Stream {
 	}
 
 	return live.Streams[picked]
+
+}
+
+func PickAll(all req.AllFollowed) req.AllFollowsChannel {
+
+	picked, err := fuzzyfinder.Find(
+		all.Follows,
+		func(i int) string {
+			return all.Follows[i].AllFollowsChannel.DisplayName
+		},
+		fuzzyfinder.WithPreviewWindow(func(i, w, h int) string {
+			if i == -1 {
+				return "Could not find any streams"
+			}
+			return fmt.Sprintf("%s\nFollowers: %v,\nStatus: %s,\nStatus: %s,\nUpdatedAt: %s,\nMature?: %v,\nLanguage: %s",
+				all.Follows[i].AllFollowsChannel.DisplayName,
+				all.Follows[i].AllFollowsChannel.Followers,
+				all.Follows[i].AllFollowsChannel.Status,
+				all.Follows[i].AllFollowsChannel.UpdatedAt,
+				all.Follows[i].AllFollowsChannel.Mature,
+				all.Follows[i].AllFollowsChannel.BroadcasterLanguage)
+
+		}))
+
+	if err != nil {
+		log.Fatalln("Couldn't initialize picker", err)
+	}
+
+	return all.Follows[picked].AllFollowsChannel
 
 }
