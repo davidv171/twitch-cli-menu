@@ -22,6 +22,7 @@ func GenReq(reqType, url *string, reader *io.Reader) *http.Request {
 
 	conf := utils.GetEnv()
 	var req *http.Request
+	va
 	var err error
 	if reader != nil {
 		req, err = http.NewRequest(*reqType, *url, *reader)
