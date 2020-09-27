@@ -37,6 +37,17 @@ Currently I don't recommend installing the software yet. But if you decide to he
 
 * THEATRON_OAUTH_KEY, which you can either export yourself, or put in your .env file. This is your oauth key for the Twitch account, so don't share it with anyone.
 
+### On NixOS
+
+Put this in your `environment.systemPackages` or `home.packages`:
+```nix
+(callPackage (fetchFromGitHub {
+  owner = "davidv171";
+  repo = "twitch-cli-menu";
+  rev = "replace-this-with-commit-hash";
+  sha256 = "0000000000000000000000000000000000000000000000000000"; # replace this with actual sha256 on fail
+}) {})
+```
 
 ## Early demo
 
