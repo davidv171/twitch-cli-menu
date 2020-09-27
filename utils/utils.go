@@ -20,7 +20,6 @@ func Qualities(maxq int) []int {
 			avq = append(avq, v)
 		}
 	}
-	fmt.Println("MAXQ" , maxq)
 	return avq
 }
 

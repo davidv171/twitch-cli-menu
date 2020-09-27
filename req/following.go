@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"sort"
 	"time"
 )
 
@@ -34,6 +35,7 @@ const get_user_url = "https://api.twitch.tv/kraken/user"
 const get = "GET"
 
 // Return list of LIVE streamers on follower list
+// TODO: Sort by viewer numbers
 func Live() LiveStreams {
 	url := follow_url
 	reqT := get
@@ -47,6 +49,9 @@ func Live() LiveStreams {
 	}
 	live := LiveStreams{}
 	err = json.Unmarshal([]byte(resp_data), &live)
+	sort.Slice(live.Streams, func(i, j int) bool {
+		return live.Streams[i].Viewers < live.Streams[j].Viewers
+	})
 
 	if err != nil {
 		log.Fatal("Couldn't unmarshal json...", err)
@@ -141,7 +146,7 @@ type ChannelVideos []struct {
 // Get user ID of user, then get user videos
 // TODO: Let user pick video category? -> undecided, maybe useless feature
 // TODO: Allow collection browsing? -> undecided
-func AllVods(channel AllFollowsChannel) (ChannelVideos) {
+func AllVods(channel AllFollowsChannel) ChannelVideos {
 
 	//TODO: Fix this stupid way of setting up types
 	reqT := "GET"
