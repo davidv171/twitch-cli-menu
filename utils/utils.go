@@ -20,6 +20,7 @@ func Qualities(maxq int) []int {
 			avq = append(avq, v)
 		}
 	}
+	fmt.Println("MAXQ" , maxq)
 	return avq
 }
 
@@ -46,7 +47,7 @@ func EnvLoad() {
 
 	// Hardcode in case it's missing
 	if len(c.Redirect) < 1 || len(c.Redirect) < 1 {
-		c.Cid = "fendbm5b5q1c2820m59sbdv9z95vs4"
+		c.Cid = "8j7747kd5dhhyi8geqeq5wb6y1jr22"
 		c.Redirect = "https://theatron.davidv7.xyz/"
 	}
 

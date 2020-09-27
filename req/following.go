@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -76,6 +77,7 @@ type AllFollowsChannel struct {
 	DisplayName         string    `json:"display_name"`
 	Game                string    `json:"game"`
 	Language            string    `json:"language"`
+	ID                  string    `json:"_id"`
 	Name                string    `json:"name"`
 	CreatedAt           time.Time `json:"created_at"`
 	UpdatedAt           time.Time `json:"updated_at"`
@@ -94,9 +96,106 @@ type AllFollowsChannel struct {
 
 // Return list of all streamers user follows
 func All() AllFollowed {
-	//TODO
 	//First we get the user id, then we get the follows for that channel
 	//GET https://api.twitch.tv/kraken/users/<user ID>/follows/channels
+	user := getUser()
+
+	// FIXME: Get maximum amount of channels, which is 100, defaults to 25
+	// TODO: Very important to only list channels with VODS, otherwise this is mostly useless
+	url := "https://api.twitch.tv/kraken/users/" + user.Id + "/follows/channels?limit=100&stream_type=all"
+	reqT := get
+	req := GenReq(&reqT, &url, nil)
+
+	respData := sendReq(req)
+
+	all := AllFollowed{}
+	err := json.Unmarshal([]byte(respData), &all)
+	if err != nil {
+		log.Fatalln("Couldn't unmarshal response", string(respData))
+	}
+
+	return all
+
+}
+
+type AllChannelVods struct {
+	ChannelVideos ChannelVideos `json:"data"`
+}
+type ChannelVideos []struct {
+	ID           string    `json:"id"`
+	UserID       string    `json:"user_id"`
+	UserName     string    `json:"user_name"`
+	Title        string    `json:"title"`
+	Description  string    `json:"description"`
+	CreatedAt    time.Time `json:"created_at"`
+	PublishedAt  time.Time `json:"published_at"`
+	URL          string    `json:"url"`
+	ThumbnailURL string    `json:"thumbnail_url"`
+	Viewable     string    `json:"viewable"`
+	ViewCount    int       `json:"view_count"`
+	Language     string    `json:"language"`
+	Type         string    `json:"type"`
+	Duration     string    `json:"duration"`
+}
+
+// Get user ID of user, then get user videos
+// TODO: Let user pick video category? -> undecided, maybe useless feature
+// TODO: Allow collection browsing? -> undecided
+func AllVods(channel AllFollowsChannel) (ChannelVideos) {
+
+	//TODO: Fix this stupid way of setting up types
+	reqT := "GET"
+	// Get first 100 videos, currently of all types, archive(auto vods)
+	url := "https://api.twitch.tv/helix/videos?user_id=" + channel.ID + "&first=100"
+	// For some reason this API call requires a completely different header
+	// TODO: Join GenBearerReq and GenReq methods, maybe pass flag?
+	req := GenBearerReq(&reqT, &url, nil)
+	respData := sendReq(req)
+
+	vods := AllChannelVods{}
+
+	err := json.Unmarshal([]byte(respData), &vods)
+	if err != nil {
+		log.Fatalln("Couldn't unmarshal response", string(respData))
+	}
+	// Filter non viewable VODs out!
+	// TODO: Filtering should account for subscription status...
+	// TODO: Decide if we should be filtering anyways, let users decide if they're subscribed, or put in a show-all flag?
+	filteredVods := ChannelVideos{}
+
+	for _, vod := range vods.ChannelVideos {
+		if vod.Viewable == "public" {
+			filteredVods = append(filteredVods, vod)
+		}
+	}
+
+	return filteredVods
+}
+
+// Wrapper for request sending, we fail on any errors as that breaks workflow completely
+func sendReq(req *http.Request) []byte {
+	resp, err := Send(req)
+
+	if err != nil {
+		log.Fatal("Could not send request")
+	}
+	if resp.StatusCode > 299 {
+		msg := make([]byte, 250)
+		resp.Body.Read(msg)
+		log.Fatal("Could not get data ", resp.Status, string(msg))
+	}
+	respData, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal("Could not parse the response")
+	}
+	return respData
+}
+
+// Translate CURRENTLY authenticated user into userId, which is what's needed for some direct queries
+// Fail for any parse or request error
+// Use translate to get a userId of another user
+func getUser() User {
+
 	url := get_user_url
 	reqT := get
 
@@ -111,35 +210,14 @@ func All() AllFollowed {
 	user := User{}
 	err = json.Unmarshal([]byte(respData), &user)
 
-	url = "https://api.twitch.tv/kraken/users/" + user.Id + "/follows/channels"
-
-	req := GenReq(&reqT, &url, nil)
-	// FIXME: Get maximum amount of channels, which is 100, defaults to 25
-	// TODO: Very important to only list channels with VODS, otherwise this is mostly useless
-
-	req.Header.Add("limit", "100")
-	// Twitch API defaults to "live" streams when looking for followed channels
-	req.Header.Add("stream_type", "all")
-	resp, err = Send(req)
-
 	if err != nil {
-		log.Fatal("Could not send request")
+		log.Fatalln("Could not generate response data", err)
 	}
-	if resp.StatusCode > 299 {
-		log.Fatal("Could not get channels", resp.Status)
-	}
-	respData, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal("Could not parse all response")
-	}
-	log.Println(string(respData))
+	return user
+}
 
-	all := AllFollowed{}
-	err = json.Unmarshal([]byte(respData), &all)
-	if err != nil {
-		log.Fatalln("Couldn't unmarshal response", string(respData))
-	}
+// Return user id of an input username
+func translateUser(username string) User {
 
-	return all
-
+	return User{}
 }
