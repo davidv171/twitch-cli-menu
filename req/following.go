@@ -106,7 +106,8 @@ func All() AllFollowed {
 	user := getUser()
 
 	// FIXME: Get maximum amount of channels, which is 100, defaults to 25
-	// TODO: Very important to only list channels with VODS, otherwise this is mostly useless
+	// TODO: Very important to only list channels with VODS, otherwise this is
+	// mostly useless, can we do this without firing a request for each streamer?
 	url := "https://api.twitch.tv/kraken/users/" + user.Id + "/follows/channels?limit=100&stream_type=all"
 	reqT := get
 	req := GenReq(&reqT, &url, nil)
@@ -118,7 +119,6 @@ func All() AllFollowed {
 	if err != nil {
 		log.Fatalln("Couldn't unmarshal response", string(respData))
 	}
-
 	return all
 
 }
@@ -167,7 +167,6 @@ func AllVods(channel AllFollowsChannel) ChannelVideos {
 	// TODO: Filtering should account for subscription status...
 	// TODO: Decide if we should be filtering anyways, let users decide if they're subscribed, or put in a show-all flag?
 	filteredVods := ChannelVideos{}
-
 	for _, vod := range vods.ChannelVideos {
 		if vod.Viewable == "public" {
 			filteredVods = append(filteredVods, vod)

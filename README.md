@@ -2,28 +2,49 @@
 
 A simple CLI Twitch tool, to use as an interactive middleware with streamlink, or youtube-dl, or anything else. It only spits out a string format of the Twitch stream url.
 
+Example output:
+
+`https://www.twitch.tv/rwxrob 160p`
+
+Or for vods:
+
+`https://www.twitch.tv/videos/757370887`
+
+streamlink, or youtube-dl can then use this URL to run their commands. You can use command substitution, or whatever scripts you want to make those run it.
+
+## Example usage
+
+Currently there aren't that many flags.
+
+Running just the binary requires to have the authentication set up. It shows you the
+
+`-v` Puts you inside vod mode. Instead of listing streamers that are live, that you follow, it lists ALL streamers that you follow, even offline ones.
+
+`-q` Decides if you want to pick qualities or not
 
 ## TODO
 
-* [x] List information and pick following live streams
+ [x] List information and pick following live streams
 
-* [] Format output to make important information stick out a bit more
+ [] Format output to make important information stick out a bit more
 
-* [] Support resetting of oauth key
+ [] Support resetting of oauth key
 
-* [] Support picking of quality
+ [x] Support picking of quality
 
-* [] Support VODs
+ [x] Support VODs
 
-* [] Full CLI support with flags
+ [] Full CLI support with flags
 
-* [] Other Theatron in bash features
+ [] Other Theatron in bash features
 
-* [] Optional: support images using SIXEL?
+ [] Optional: support images using SIXEL?
 
-* [] Don't rely on ktr0731's go fuzzy finder completely
+ [] Don't rely on ktr0731's go fuzzy finder completely
 
-* [] Refractor
+ [] Refractor
+
+ [] Combo mode, meaning we get to see all streamers we follow, their live status, then we get to pick if we want to watch their vods or the livestream
 
 ## Status
 
