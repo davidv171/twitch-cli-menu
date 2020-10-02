@@ -26,7 +26,7 @@ Running just the binary requires to have the authentication set up. It shows you
 
  [x] List information and pick following live streams
 
- [] Format output to make important information stick out a bit more
+ [] Format output to make important information stick out a bit more -> in the preview or menu window, not the output
 
  [] Support resetting of oauth key
 
@@ -40,7 +40,7 @@ Running just the binary requires to have the authentication set up. It shows you
 
  [] Optional: support images using SIXEL?
 
- [] Don't rely on ktr0731's go fuzzy finder completely
+ [] Don't rely on ktr0731's go fuzzy finder completely -> we want to differentiate between Ctrl-C event and user not picking an existing streamer
 
  [] Refractor
 
@@ -69,6 +69,12 @@ Put this in your `environment.systemPackages` or `home.packages`:
   sha256 = "0000000000000000000000000000000000000000000000000000"; # replace this with actual sha256 on fail
 }) {})
 ```
+
+## How to get the oauth key
+
+Since the oauth key retrieval is kind of annoying to find, here's a link
+
+https://twitchapps.com/tmi/
 
 ## Early demo
 
