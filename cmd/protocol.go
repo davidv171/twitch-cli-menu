@@ -20,10 +20,15 @@ func Protocol(command Cmd) {
 	var following req.LiveStreams
 	var output Output
 
+	if command.Top {
+	    req.Top()
+
+	}
+
 	if command.Vod {
 		// Pick streamers
 		all := req.All()
-		picked := PickAll(all)
+		picked := PickAllFollowing(all)
 		// Pick available VODS for streamers
 		vods := req.AllVods(picked)
 

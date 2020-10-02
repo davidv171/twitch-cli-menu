@@ -225,3 +225,27 @@ func translateUser(username string) User {
 
 	return User{}
 }
+
+
+// Get top streamers on the platform
+// TODO: Support vod mode for those too
+// TODO: Support game picking
+// TODO: Support language picking
+func Top() LiveStreams {
+
+	// Use old API because new one kinda useless for this
+	url := "https://api.twitch.tv/kraken/streams/"
+	reqT := get
+	// Unauthenticated call
+	req := GenUnauthReq(&reqT, &url, nil)
+
+	respData := sendReq(req)
+
+	top := LiveStreams{}
+	err := json.Unmarshal([]byte(respData), &top)
+
+	if err != nil {
+		log.Fatalln("Could not generate top streamer response data ", err)
+	}
+	return top
+}

@@ -40,7 +40,7 @@ func PickLive(live req.LiveStreams) req.LiveStream {
 }
 
 // Pick between all channels the user follows(limited to 100 by the API)
-func PickAll(all req.AllFollowed) req.AllFollowsChannel {
+func PickAllFollowing(all req.AllFollowed) req.AllFollowsChannel {
 
 	// TODO: Allow picking not on list
 	picked, err := fuzzyfinder.Find(
@@ -99,3 +99,4 @@ func PickVods(allVods req.ChannelVideos) (url string) {
 
 	return allVods[picked].URL
 }
+
